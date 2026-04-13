@@ -40,7 +40,7 @@ services:
   frontend:
     build:
       context: ./frontend
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile_slim
     environment:
       GATEWAY_URL: http://gateway:8000
     depends_on:
