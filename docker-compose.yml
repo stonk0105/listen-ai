@@ -1,0 +1,52 @@
+services:
+  stat:
+    build:
+      context: ./stat
+      dockerfile: Dockerfile
+    environment:
+      STAT_PORT: "8002"
+      SQLITE_PATH: /data/listenai.db
+    volumes:
+      - listenai_sqlite_data:/data
+    ports:
+      - "8002:8002"
+
+  nlp:
+    build:
+      context: ./nlp
+      dockerfile: Dockerfile
+    environment:
+      NLP_PORT: "8001"
+    ports:
+      - "8001:8001"
+
+  gateway:
+    build:
+      context: ./gateway
+      dockerfile: Dockerfile
+    environment:
+      GATEWAY_PORT: "8000"
+      STAT_URL: http://stat:8002
+      NLP_URL: http://nlp:8001
+      JWT_SECRET: supersecret
+      DEMO_USER: admin
+      DEMO_PASS: admin123
+    depends_on:
+      - stat
+      - nlp
+    ports:
+      - "8000:8000"
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    environment:
+      GATEWAY_URL: http://gateway:8000
+    depends_on:
+      - gateway
+    ports:
+      - "8501:8501"
+
+volumes:
+  listenai_sqlite_data:
